@@ -19,7 +19,8 @@ export function ArchitectureDiagram({ dotCode, loading }: ArchitectureDiagramPro
     const render = async () => {
       try {
         const viz = await instance();
-        const svgElement = viz.renderString(dotCode);
+        // 出力形式を SVG に明示的に指定
+        const svgElement = viz.renderString(dotCode, { format: "svg" });
         setSvg(svgElement);
         setRenderError(null);
       } catch (err) {
