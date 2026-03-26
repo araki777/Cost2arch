@@ -7,12 +7,12 @@ const router = new Hono();
 
 router.post("/generate", async (c) => {
     const { amount, activityName } = await c.req.json();
-    
+
     // 代表的なサービスの最新価格を取得
     const priceInfo = await getServicePriceSummary([
-        'Virtual Machines', 
-        'Azure SQL Database', 
-        'Storage Accounts', 
+        'Virtual Machines',
+        'Azure SQL Database',
+        'Storage Accounts',
         'App Service'
     ]);
 
@@ -26,24 +26,32 @@ router.post("/generate", async (c) => {
     Azure Load Balancer, VM, AKS, SWA, CosmosDB, MySQL, APIM, Web PubSub, KeyVault, AI Services 等から、まるで推し活のように惜しみなくリソースを注ぎ込んだ、予算ギリギリの豪華な構成にして。
     
     【出力形式 (JSONのみ)】:
+    JSON内の "dotCode" は、必ず一行の文字列（改行を \n に置換したもの）として出力してください。
     {
-      "systemName": "システム名（活動内容にちなんだカッコいい名前）",
-      "architecture": ["コンポーネント1", "コンポーネント2"],
-      "dotCode": "digraph G { ... } // Graphviz形式の構成図コード",
-      "monthlyCost": 14800,
-      "comment": "『その推し活費用をこれだけのAzureリソースに換算しました！』といった、コンセプトに沿ったエンジニアらしい熱い解説・煽りコメント"
+    "systemName": "...",
+    "architecture": [...],
+    "dotCode": "digraph G { rankdir=LR; node [shape=box, color=\\"#0078D4\\", fontname=\\"Arial\\"]; ... }",
+    "monthlyCost": 14800,
+    "comment": "..."
     }
-    
-    【DOTコードの注意点】:
-    - Azureの公式アイコンに近い色使い（ノードのカラー指定など）を反映して。
-    - 各ノードにはスペック（Standard_D2s_v3等）をラベルに含めて。
-    - 接続関係を明示して（LB -> WebApp -> DBなど）。
+
+    【DOTコードの具体的な制約】:
+    - 必ず \`digraph G { ... }\` で開始すること。
+    - Azureの青色（#0078D4）をノードのcolorに指定して。
+    - 接続は \`->\` を使用して。
+    最後に、一切の解説を省き、純粋なJSONオブジェクトのみを出力してください。
+    \`\`\`json
+    { ... }
+    \`\`\`
     `;
-    
+
     try {
         const result = await fetchGemini(prompt);
+
+        const cleanResult = result.replace(/```json|```/g, "").trim();
+
         // JSON部分を抽出
-        const jsonMatch = result.match(/\{[\s\S]*\}/);
+        const jsonMatch = cleanResult.match(/\{[\s\S]*\}/);
         if (!jsonMatch) throw new Error("Invalid Gemini response");
 
         const data = JSON.parse(jsonMatch[0]);
