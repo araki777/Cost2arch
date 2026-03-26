@@ -21,9 +21,14 @@ const api = new OpenAPIHono();
 // Mount Routes
 api.route("/infra", infraRoute);
 
-// Mount with /api and / for SWA compatibility
+// Mount with /api and / for SWA compatibility, including /api/api for resilience
 app.route("/api", api);
 app.route("/", api);
+app.route("/api/api", api);
+
+// Root endpoint for connectivity check
+app.get("/", (c) => c.text("Cost2arch API is running - Resilient Routing Enabled"));
+
 
 // Health check
 app.get("/health", (c) => c.text("OK"));
