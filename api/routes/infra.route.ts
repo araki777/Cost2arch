@@ -1,7 +1,7 @@
 import { Hono } from "hono";
-import { fetchGemini } from "../lib/gemini.js";
-import { getServicePriceSummary } from "../lib/azure-prices.js";
-import { getPrisma } from "../lib/db.js";
+import { fetchGemini } from "../lib/gemini";
+import { getServicePriceSummary } from "../lib/azure-prices";
+import { getPrisma } from "../lib/db";
 
 const router = new Hono();
 

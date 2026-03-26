@@ -4,7 +4,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export const fetchGemini = async (prompt: string) => {
   // ユーザーの要望に合わせてモデルを使用
-  const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite" });
+  const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
 
   try {
     const result = await model.generateContent(prompt);
