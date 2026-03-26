@@ -64,16 +64,16 @@ export function ArchitectureDiagram({ dotCode, loading }: ArchitectureDiagramPro
   }
 
   return (
-    <div className="relative group overflow-hidden rounded-xl border border-slate-700/30 bg-white shadow-2xl transition-all hover:border-primary/50 min-h-[400px]">
+    <div className="relative group overflow-hidden rounded-xl border border-slate-700/30 bg-white shadow-2xl transition-all hover:border-primary/50 min-h-[500px] flex flex-col">
       {/* Toolbar */}
-      <div className="absolute right-4 top-4 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/80 backdrop-blur-md shadow-lg">
+      <div className="absolute right-4 top-4 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button variant="outline" size="icon" className="h-8 w-8 rounded-full bg-white/90 border-slate-200 text-slate-900 hover:bg-slate-100 shadow-sm">
           <ZoomIn className="h-4 w-4" />
         </Button>
-        <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/80 backdrop-blur-md shadow-lg">
+        <Button variant="outline" size="icon" className="h-8 w-8 rounded-full bg-white/90 border-slate-200 text-slate-900 hover:bg-slate-100 shadow-sm">
           <Download className="h-4 w-4" />
         </Button>
-        <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/80 backdrop-blur-md shadow-lg">
+        <Button variant="outline" size="icon" className="h-8 w-8 rounded-full bg-white/90 border-slate-200 text-slate-900 hover:bg-slate-100 shadow-sm">
           <Maximize2 className="h-4 w-4" />
         </Button>
       </div>
@@ -81,7 +81,7 @@ export function ArchitectureDiagram({ dotCode, loading }: ArchitectureDiagramPro
       {/* SVG Container */}
       <div 
         ref={containerRef}
-        className="w-full h-full p-8 flex justify-center items-center [&>svg]:max-w-full [&>svg]:h-auto transition-transform duration-500"
+        className="flex-1 w-full p-8 flex justify-center items-center overflow-auto [&>svg]:max-w-full [&>svg]:h-auto transition-transform duration-500 z-10"
         dangerouslySetInnerHTML={{ __html: svg }}
       />
       
