@@ -1,3 +1,5 @@
+import { promises as fs } from "fs";
+import { join } from "path";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { swaggerUI } from "@hono/swagger-ui";
 import { cors } from "hono/cors";
@@ -23,6 +25,21 @@ api.route("/infra", infraRoute);
 
 // Mount with /api and / for SWA compatibility, including /api/api for resilience
 app.route("/api", api);
+app.get("/api/icons/*", async (c) => {
+  try {
+    const iconPath = c.req.path.replace("/api/icons/", "");
+    const decodedPath = decodeURIComponent(iconPath);
+    const filePath = join(process.cwd(), "icons", decodedPath);
+    const file = await fs.readFile(filePath);
+    return c.body(file, 200, {
+      "Content-Type": "image/svg+xml",
+      "Cache-Control": "public, max-age=31536000, immutable",
+    });
+  } catch (e) {
+    console.error("Icon fetch error:", e);
+    return c.notFound();
+  }
+});
 app.route("/", api);
 app.route("/api/api", api);
 

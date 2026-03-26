@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArchitectureDiagram } from './components/ArchitectureDiagram';
+import ArchitectureDiagram from './components/ArchitectureDiagram';
 import { Button } from './components/ui/button';
 import { Input } from './components/ui/input';
 import { Card } from './components/ui/card';
@@ -69,7 +69,7 @@ export default function App() {
             Que Sera Architecture
           </h1>
           <p className="text-slate-400 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed">
-            その推し活予算を、Azureインフラに変換。<br className="hidden md:block" />
+            その推し活予算を、Microsoft Azure® インフラストラクチャに変換。<br className="hidden md:block" />
             「成るようになる（ケセラセラ）」最強のシステム構成を提案します。
           </p>
         </header>
@@ -200,7 +200,7 @@ export default function App() {
                 {/* Footnote */}
                 <div className="flex items-center justify-center gap-6 py-4 opacity-30 grayscale blur-[0.5px]">
                   <ShieldCheck className="h-4 w-4" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em]">ANS Certified Architecture • Azure Cost Optimized • Que Sera Optimized</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em]">ANS Certified Architecture • Microsoft Azure® Cost Optimized • Que Sera Optimized</span>
                 </div>
               </div>
             ) : (
@@ -218,6 +218,16 @@ export default function App() {
             )}
           </div>
         </div>
+
+        {/* Footer / Legal */}
+        <footer className="mt-20 pb-12 text-center select-none">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-700 opacity-40 mb-2">
+            Microsoft, Azure, and other Microsoft names and logos are trademarks or registered trademarks of Microsoft Corporation in the United States and/or other countries.
+          </p>
+          <p className="text-[9px] font-bold text-slate-800 opacity-25">
+            Microsoft、Azure、およびその他のマイクロソフトの名称およびロゴは、米国 Microsoft Corporation および/またはその関連会社の商標または登録商標です。
+          </p>
+        </footer>
       </div>
     </div>
   );

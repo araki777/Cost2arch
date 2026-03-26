@@ -1,17 +1,22 @@
-import { useEffect, useRef, useState } from "react";
+"use client";
+
+import React, { useEffect, useState, useRef } from "react";
 import { instance } from "@viz-js/viz";
 import { Loader2, ZoomIn, Download, Maximize2 } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "@/app/components/ui/button";
 
 interface ArchitectureDiagramProps {
   dotCode: string;
   loading?: boolean;
 }
 
-export function ArchitectureDiagram({ dotCode, loading }: ArchitectureDiagramProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+export default function ArchitectureDiagram({
+  dotCode,
+  loading,
+}: ArchitectureDiagramProps) {
   const [svg, setSvg] = useState<string | null>(null);
   const [renderError, setRenderError] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!dotCode) return;
@@ -89,7 +94,7 @@ export function ArchitectureDiagram({ dotCode, loading }: ArchitectureDiagramPro
       {/* Legend / Overlay */}
       <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-slate-900/10 backdrop-blur-sm px-3 py-1.5 rounded-full border border-slate-900/5 pointer-events-none">
         <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse"></div>
-        <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Azure Optimized</span>
+        <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Microsoft Azure® Optimized</span>
       </div>
     </div>
   );
