@@ -1,204 +1,221 @@
 import { useState, useEffect } from 'react';
+import { ArchitectureDiagram } from './components/ArchitectureDiagram';
+import { Button } from './components/ui/button';
+import { Input } from './components/ui/input';
+import { Card } from './components/ui/card';
+import { Sparkles, Zap, Coins, History, ArrowRight, Music, Cloud, ShieldCheck } from 'lucide-react';
+import { toast } from 'sonner';
+
+interface GeneratedInfra {
+  systemName: string;
+  architecture: string[];
+  dotCode: string;
+  monthlyCost: number;
+  comment: string;
+}
 
 export default function App() {
   const [oshikatsuAmount, setOshikatsuAmount] = useState('');
-  const [infraLevel, setInfraLevel] = useState(0);
-  const [availableHours, setAvailableHours] = useState(0);
+  const [activityName, setActivityName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<GeneratedInfra | null>(null);
 
-  // 推し活金額からインフラレベルと稼働可能時間を計算
-  useEffect(() => {
-    const amount = parseInt(oshikatsuAmount) || 0;
-    // 10,000円で1レベル分のインフラが作れる（最大10レベル）
-    const level = Math.min(10, Math.floor(amount / 10000));
-    setInfraLevel(level);
+  const handleGenerate = async () => {
+    if (!oshikatsuAmount || !activityName) {
+      toast.error('活動内容と金額を入力してください！');
+      return;
+    }
 
-    // 稼働可能時間 = レベル × 24時間（1日あたり）
-    const hours = level * 24;
-    setAvailableHours(hours);
-  }, [oshikatsuAmount]);
+    setLoading(true);
+    try {
+      const response = await fetch('/api/infra/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: parseInt(oshikatsuAmount),
+          activityName,
+        }),
+      });
 
-  // 時間を HHH:MM:SS 形式に変換
-  const formatTime = (hours: number) => {
-    const h = Math.floor(hours).toString().padStart(3, '0');
-    const m = ((hours % 1) * 60).toFixed(0).padStart(2, '0');
-    const s = '00';
-    return `${h}:${m}:${s}`;
+      if (!response.ok) throw new Error('Generation failed');
+      const data = await response.json();
+      setResult(data);
+      toast.success('インフラ構成のビルドに成功しました！');
+    } catch (error) {
+      console.error(error);
+      toast.error('構成の生成に失敗しました。Geminiの機嫌が悪いようです。');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="dark">
-      <div className="size-full min-h-screen bg-background text-foreground relative overflow-hidden">
-        {/* Azure アイコンの背景 */}
-        <div className="absolute inset-0 opacity-5 pointer-events-none">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute"
-              style={{
-                left: `${(i * 17 + 10) % 90}%`,
-                top: `${(i * 23 + 15) % 80}%`,
-                transform: `rotate(${i * 15}deg)`,
-              }}
-            >
-              <svg width="80" height="80" viewBox="0 0 96 96" fill="none">
-                <path
-                  d="M70.5 28.5L48 12L25.5 28.5V60L48 76.5L70.5 60V28.5Z"
-                  fill="currentColor"
-                  fillOpacity="0.3"
-                />
-                <path
-                  d="M48 12L25.5 28.5L48 45L70.5 28.5L48 12Z"
-                  fill="currentColor"
-                  fillOpacity="0.5"
-                />
-                <path
-                  d="M48 45V76.5L70.5 60V28.5L48 45Z"
-                  fill="currentColor"
-                  fillOpacity="0.7"
-                />
-              </svg>
-            </div>
-          ))}
-        </div>
+    <div className="dark min-h-screen bg-slate-950 text-slate-50 selection:bg-indigo-500/30 selection:text-white overflow-x-hidden">
+      {/* Background with Mrs. GREEN APPLE / Azure colors */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-0 right-0 h-[600px] w-[600px] rounded-full bg-blue-600/10 blur-[120px] animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 h-[600px] w-[600px] rounded-full bg-emerald-500/5 blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03] grayscale"></div>
+      </div>
 
-        {/* メインコンテンツ */}
-        <div className="relative z-10 container mx-auto px-6 py-12 max-w-6xl">
-          <h1 className="text-center mb-6 text-primary tracking-wide">
-            推し活 → Azure 変換シミュレーター
+      <div className="relative z-10 container mx-auto px-6 py-12 max-w-7xl">
+        {/* Header */}
+        <header className="text-center mb-16 space-y-4 animate-in fade-in slide-in-from-top-4 duration-1000">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4">
+            <Sparkles className="h-3.5 w-3.5" />
+            Que Sera Architecture Pro
+          </div>
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter bg-gradient-to-r from-blue-400 via-emerald-400 to-indigo-400 bg-clip-text text-transparent drop-shadow-sm">
+            Que Sera Architecture
           </h1>
-          <p className="text-center text-muted-foreground mb-12 text-lg">
-            その推し活予算があれば、こんなシステムが作れます！
+          <p className="text-slate-400 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed">
+            その推し活予算を、Azureインフラに変換。<br className="hidden md:block" />
+            「成るようになる（ケセラセラ）」最強のシステム構成を提案します。
           </p>
+        </header>
 
-          {/* 推し活金額入力 */}
-          <div className="mb-12">
-            <div className="bg-card border border-border rounded-lg p-8 shadow-lg max-w-2xl mx-auto">
-              <label className="block mb-6 text-center text-xl">
-                💰 月々の推し活予算を入力してください
-              </label>
-              <div className="relative">
-                <span className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground text-2xl">
-                  ¥
-                </span>
-                <input
-                  type="number"
-                  value={oshikatsuAmount}
-                  onChange={(e) => setOshikatsuAmount(e.target.value)}
-                  placeholder="50000"
-                  className="w-full bg-input-background border-2 border-primary/30 rounded-xl px-16 py-6 text-3xl text-center
-                    focus:outline-none focus:ring-4 focus:ring-primary/50 focus:border-primary transition-all"
-                />
-              </div>
-              <div className="mt-6 text-center">
-                <div className="text-muted-foreground text-sm">
-                  入力金額
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          {/* Left Column: Input Form */}
+          <div className="lg:col-span-4 space-y-8 animate-in fade-in slide-in-from-left-4 duration-1000">
+            <Card className="p-8 bg-slate-900/40 border-slate-800/50 backdrop-blur-xl shadow-2xl relative overflow-hidden group">
+              <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-500 via-emerald-500 to-transparent"></div>
+              
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                    <Music className="h-5 w-5 text-emerald-400" />
+                  </div>
+                  <h2 className="text-xl font-black tracking-tight">推し活の記録</h2>
                 </div>
-                <div
-                  className="text-primary mt-2"
-                  style={{ fontSize: '2rem', fontWeight: 600 }}
-                >
-                  ¥{parseInt(oshikatsuAmount || '0').toLocaleString()}
-                </div>
-              </div>
-            </div>
-          </div>
 
-          {/* 稼働可能時間 - デジタル時計風表示 */}
-          <div className="mb-12">
-            <div className="bg-card border-2 border-primary/20 rounded-xl p-12 text-center shadow-2xl">
-              <h2 className="text-muted-foreground mb-8">月間稼働可能時間</h2>
-              <div
-                className="font-mono tracking-widest text-primary"
-                style={{
-                  fontSize: '6rem',
-                  fontWeight: 700,
-                  textShadow: '0 0 20px currentColor',
-                  letterSpacing: '0.1em',
-                }}
-              >
-                {formatTime(availableHours)}
-              </div>
-              <div className="text-muted-foreground mt-4 tracking-wider">
-                HOURS : MINUTES : SECONDS
-              </div>
-            </div>
-          </div>
-
-          {/* インフラ構成レベル表示 */}
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-card border border-border rounded-lg p-8 shadow-lg">
-              <h2 className="text-center mb-8">
-                構築可能な Azure インフラ構成
-              </h2>
-
-              {/* レベルメーター */}
-              <div className="mb-8">
-                <div className="flex items-center gap-4 mb-4">
-                  <span className="text-muted-foreground min-w-[2rem]">Lv 0</span>
-                  <div className="flex-1 h-8 bg-muted rounded-lg overflow-hidden relative">
-                    <div
-                      className="h-full bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-300 transition-all duration-500 ease-out"
-                      style={{
-                        width: `${(infraLevel / 10) * 100}%`,
-                        boxShadow: infraLevel > 0 ? '0 0 20px rgba(59, 130, 246, 0.5)' : 'none',
-                      }}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 pl-1">活動内容</label>
+                    <Input 
+                      placeholder="例: Mrs. GREEN APPLE ライブ遠征" 
+                      value={activityName}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setActivityName(e.target.value)}
+                      className="bg-slate-950/50 border-slate-800 h-12 focus:ring-emerald-500/50"
                     />
-                    {/* レベルマーカー */}
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((marker) => (
-                      <div
-                        key={marker}
-                        className="absolute top-0 bottom-0 w-0.5 bg-background/50"
-                        style={{ left: `${(marker / 10) * 100}%` }}
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 pl-1">予算 (円)</label>
+                    <div className="relative">
+                      <Coins className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-600" />
+                      <Input 
+                        type="number"
+                        placeholder="15000" 
+                        value={oshikatsuAmount}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setOshikatsuAmount(e.target.value)}
+                        className="bg-slate-950/50 border-slate-800 h-14 pl-12 text-xl font-bold focus:ring-blue-500/50"
                       />
-                    ))}
+                    </div>
                   </div>
-                  <span className="text-muted-foreground min-w-[3rem]">Lv 10</span>
-                </div>
-              </div>
 
-              {/* レベル表示 */}
-              <div className="text-center mb-8">
-                <div className="inline-block bg-gradient-to-br from-blue-500 to-cyan-400 text-white px-12 py-6 rounded-xl shadow-xl">
-                  <div className="text-sm opacity-80 mb-2">インフラレベル</div>
-                  <div
-                    className="font-mono"
-                    style={{ fontSize: '3.5rem', fontWeight: 700, lineHeight: 1 }}
+                  <Button 
+                    onClick={handleGenerate}
+                    disabled={loading}
+                    className="w-full h-16 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-lg transition-all active:scale-[0.98] shadow-lg shadow-blue-900/20 group"
                   >
-                    {infraLevel}
-                  </div>
-                  <div className="text-sm opacity-80 mt-2">/ 10</div>
+                    {loading ? (
+                      <Zap className="h-6 w-6 animate-spin" />
+                    ) : (
+                      <>
+                        インフラを構築する
+                        <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </Button>
                 </div>
               </div>
+            </Card>
 
-              {/* システム構成の説明 */}
-              <div className="bg-muted/30 border border-border rounded-lg p-6">
-                <div className="text-center mb-4">
-                  <strong className="text-lg">このレベルで構築できるシステム</strong>
+            {/* Stats Card */}
+            <Card className="p-6 bg-slate-900/40 border-slate-800/50 backdrop-blur-md">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-slate-500">
+                  <span>Resource Consumption</span>
+                  <History className="h-4 w-4" />
                 </div>
-                <div className="text-muted-foreground text-center">
-                  {infraLevel === 0 && '予算を入力してください'}
-                  {infraLevel === 1 && '🌱 静的Webサイト（App Service Basic）'}
-                  {infraLevel === 2 && '🌿 小規模Webアプリ + データベース（SQL Database Basic）'}
-                  {infraLevel === 3 && '🪴 Webアプリ + キャッシュ + ストレージ'}
-                  {infraLevel === 4 && '🌳 中規模システム + API Management + CDN'}
-                  {infraLevel === 5 && '🏗️ マイクロサービス基盤（AKS Small）'}
-                  {infraLevel === 6 && '🏭 高可用性システム + Load Balancer + Backup'}
-                  {infraLevel === 7 && '🌐 グローバル配信 + Multi-Region構成'}
-                  {infraLevel === 8 && '⚡ 高性能AI/ML基盤 + GPU VM + Cognitive Services'}
-                  {infraLevel === 9 && '🚀 エンタープライズ級 + セキュリティ強化 + 監視'}
-                  {infraLevel === 10 && '🏆 フルスタック構成 + DevOps + DR対策完備'}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 rounded-xl bg-slate-950/50 border border-slate-800">
+                    <div className="text-xs text-slate-500 mb-1">Total Budget</div>
+                    <div className="text-xl font-bold tracking-tight">¥{(parseInt(oshikatsuAmount) || 0).toLocaleString()}</div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-slate-950/50 border border-slate-800">
+                    <div className="text-xs text-slate-500 mb-1">Region</div>
+                    <div className="text-xl font-bold tracking-tight text-blue-400">West US 2</div>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Card>
           </div>
 
-          {/* 計算式の説明 */}
-          <div className="mt-12 bg-muted/30 border border-border rounded-lg p-6">
-            <div className="text-muted-foreground text-center space-y-2">
-              <div><strong>計算式：</strong></div>
-              <div>インフラレベル = 推し活予算 ÷ 10,000円（最大Lv10）</div>
-              <div>月間稼働時間 = インフラレベル × 24時間</div>
-            </div>
+          {/* Right Column: Results & Diagram */}
+          <div className="lg:col-span-8 space-y-8 animate-in fade-in slide-in-from-right-4 duration-1000 delay-200">
+            {result ? (
+              <div className="space-y-8">
+                {/* Result Card */}
+                <Card className="p-8 bg-slate-900/60 border-indigo-500/30 shadow-[0_0_50px_rgba(79,70,229,0.1)] relative overflow-hidden">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 border-b border-slate-800/50 pb-8">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Cloud className="h-4 w-4 text-blue-400" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Architecture Built</span>
+                      </div>
+                      <h3 className="text-3xl font-black tracking-tight mb-2">{result.systemName}</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {result.architecture.map((tech: string, i: number) => (
+                          <span key={i} className="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px] font-bold uppercase tracking-widest border border-slate-700">{tech}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Estimated Cost</div>
+                      <div className="text-4xl font-black text-emerald-400">¥{result.monthlyCost.toLocaleString()}</div>
+                      <div className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">/ MONTHLY</div>
+                    </div>
+                  </div>
+
+                  <div className="relative mb-8">
+                    <div className="p-6 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 text-indigo-200 italic leading-relaxed text-lg">
+                      " {result.comment} "
+                    </div>
+                  </div>
+
+                  {/* Architecture Visualization */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between px-1">
+                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Infrastructure Visualization (DOT/SVG)</label>
+                       <div className="flex items-center gap-2">
+                         <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                         <span className="text-[9px] font-bold text-emerald-500/80 uppercase">Static Render</span>
+                       </div>
+                    </div>
+                    <ArchitectureDiagram dotCode={result.dotCode} loading={loading} />
+                  </div>
+                </Card>
+
+                {/* Footnote */}
+                <div className="flex items-center justify-center gap-6 py-4 opacity-30 grayscale blur-[0.5px]">
+                  <ShieldCheck className="h-4 w-4" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em]">ANS Certified Architecture • Azure Cost Optimized • Que Sera Optimized</span>
+                </div>
+              </div>
+            ) : (
+              <div className="h-full min-h-[600px] flex flex-col items-center justify-center p-12 rounded-3xl bg-slate-900/20 border-2 border-dashed border-slate-800/50 group">
+                <div className="relative mb-8">
+                   <div className="absolute inset-0 bg-blue-500/20 blur-[60px] rounded-full group-hover:scale-150 transition-transform duration-1000"></div>
+                   <Cloud className="h-24 w-24 text-slate-800 relative z-10" />
+                </div>
+                <h4 className="text-2xl font-black mb-4 text-slate-700">準備完了</h4>
+                <p className="text-slate-500 text-center max-w-sm leading-relaxed font-medium capitalize">
+                  左側のフォームから予算を入力して、<br />
+                  インフラ構成を構築してください。
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

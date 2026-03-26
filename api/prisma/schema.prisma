@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/prisma-client"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model AzureServicePrice {
+  id          Int      @id @default(autoincrement())
+  serviceName String   @unique @db.NVarChar(200)
+  skuName     String   @db.NVarChar(200)
+  unitPrice   Float
+  unit        String   @db.NVarChar(50)
+  currency    String   @default("JPY") @db.NVarChar(10)
+  location    String   @default("japaneast") @db.NVarChar(50)
+  updatedAt   DateTime @updatedAt
+}
+
+model ArchitectureResult {
+  id           String   @id @default(uuid()) @db.NVarChar(100)
+  systemName   String   @db.NVarChar(200)
+  activityName String   @db.NVarChar(200)
+  totalCost    Float
+  architecture String   @db.NVarChar(MAX)
+  dotCode      String   @db.NVarChar(MAX)
+  comment      String?  @db.NVarChar(MAX)
+  createdAt    DateTime @default(now())
+}

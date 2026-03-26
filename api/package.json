@@ -1,0 +1,39 @@
+{
+  "name": "api",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch index.ts",
+    "start": "tsx index.ts",
+    "build": "esbuild src/functions/index.ts --bundle --platform=node --format=cjs --target=node20 --outfile=index.js --external:@azure/functions --external:@prisma/adapter-mssql --external:mssql && prisma generate --schema=prisma/schema.prisma",
+    "watch": "tsc -w",
+    "generate": "prisma generate --schema=prisma/schema.prisma"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.6.0",
+    "@hono/node-server": "^1.13.7",
+    "@hono/swagger-ui": "^0.5.0",
+    "@hono/zod-openapi": "^0.18.4",
+    "@marplex/hono-azurefunc-adapter": "^1.0.1",
+    "@prisma/adapter-mssql": "^6.4.1",
+    "@prisma/client": "^6.4.1",
+    "@google/generative-ai": "^0.21.0",
+    "hono": "^4.6.14",
+    "mssql": "^11.0.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "esbuild": "^0.24.0",
+    "prisma": "^6.4.1",
+    "tsx": "^4.19.2"
+  },
+  "engines": {
+    "node": ">=20.0.0 <23.0.0"
+  },
+  "volta": {
+    "node": "22.22.1"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}
